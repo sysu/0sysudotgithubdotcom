@@ -1,0 +1,5 @@
+*~
+_*.swp
+.DS_Store
+Thumbs.db
+jekyll/_site

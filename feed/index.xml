@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+	<title>ghinda.net</title>
+	<link href="http://open.sysujwxt.com/"/>
+	<link type="application/atom+xml" rel="self" href="http://open.sysujwxt.com/atom.xml"/>
+	<updated>2013-02-16T16:57:45+08:00</updated>
+	<id>http://ghinda.net/</id>
+	<author>
+		<name>Ionut Colceriu</name>
+		<email>opensysu@gmail.com</email>
+	</author>
+
+		
+	<entry>
+		<id>http://open.sysujwxt.com/opensysu-released</id>
+		<link type="text/html" rel="alternate" href="http://open.sysujwxt.com/opensysu-released"/>
+		<title>OPENSYSU released</title>
+		<updated>2013-02-16T00:00:00+08:00</updated>
+		<author>
+			<name>opensysu</name>
+			<uri>http://open.sysujwxt.com/</uri>
+		</author>
+		<content type="html">&lt;p&gt;Nothing.&lt;/p&gt;</content>
+	</entry>
+	
+ 
+</feed>

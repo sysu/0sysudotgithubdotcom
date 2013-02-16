@@ -1,0 +1,11 @@
+<section>
+	<h2>Tags</h2>
+	<ul>
+	{% for category in site.categories %}
+		{% assign category_name = category[0] %}
+		<li>
+			<a href="/{{ site.category_dir }}/{{ category_name }}.html">{{ category_name }} <span class="count">{{ site.categories[category_name] | size }}</span></a>
+		</li>
+	{% endfor %}
+	</ul>
+</section>

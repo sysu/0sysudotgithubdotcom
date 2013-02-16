@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8" />
+	<title>SYSUJWXT API &#8212; OPENSYSU</title>
+	<meta name="description" content="Open Source in SYSU">
+	<link rel="alternate" type="application/atom+xml" href="/feed/index.xml" />
+	<link rel="stylesheet" type="text/css" href="/css/base.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+
+<header role="banner">
+	<h1><a href="/" title="Home"><img src="/images/opensysu-logo.png" width="149" alt="opensysu logo" /></a></h1>
+    <p>Open Source in SYSU</p>
+	<nav>
+		<ul>
+			<li><a href="/sysujwxt.html">SYSUJWXT</a></li>
+			<li><a href="/sysulib.html">SYSULIB</a></li>
+			<li><a href="http://sysujwxt.com">INSYSU</a></li>
+			<li><a href="/projects.html">Projects</a></li>
+			<li><a href="/about.html">About</a></li>
+		</ul>
+	</nav>
+
+	<section>
+		<form action="http://www.google.com/cse" id="cse-search-box">
+			<input type="hidden" name="cx" value="002340623996979665103:adnmpqrmbhk" />
+			<input type="hidden" name="ie" value="UTF-8" />
+			<input type="search" name="q" size="31" placeholder="Search..."/>
+		</form>
+	</section>
+
+	<section class="contact-details">
+		<p>
+			<a href="mailto:opensysu@gmail.com">opensysu@gmail.com</a> <br />
+			<a href="https://github.com/sysu" rel="external">github</a> &#8226;
+			<a href="http://twitter.com/opensysu" rel="external">twitter</a>
+		</p>
+	</section>
+
+</header>
+
+<article id="content">
+	<article>
+	<h1><a href="/sysujwxt.html">SYSUJWXT API</a></h1>
+	<div class='notice'>
+本 API 为第一版，提供了基本的认证后查询功能。API 服务器的地址是 http://api.sysujwxt.com/v1/，所有的数据通过 JSON 交互。
+</div>
+<h2 id='id4'>常见参数</h2>
+
+<p>因为提供的都是认证后的信息获取，所以只能接受 POST 请求。用到的参数如下：</p>
+<div class='highlight'><pre><code class='bash'>usernames     <span class='c'># 登陆用学号</span>
+password      <span class='c'># 密码</span>
+token         <span class='c'># 登陆成功后获得的 token</span>
+sno           <span class='c'># 学号</span>
+year          <span class='c'># 学年度，格式为 2011-2012</span>
+term          <span class='c'># 学期</span>
+course_type   <span class='c'># 课程类型</span>
+grade         <span class='c'># 年级</span>
+tno           <span class='c'># 教学号</span>
+</code></pre></div>
+<h2 id='id5'>错误处理</h2>
+
+<p>1 发送的 JSON 如果缺少必要的参数会导致 400 Bad Request 错误。</p>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>400</span> <span class='ne'>BAD REQUEST</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>{</span>
+  <span class='nt'>&quot;message&quot;</span><span class='p'>:</span> <span class='s2'>&quot;Bad Request&quot;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<p>2 认证失败会导致 401 Authentication Failed 错误。</p>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>401</span> <span class='ne'>UNAUTHORIZED</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>{</span>
+  <span class='nt'>&quot;message&quot;</span><span class='p'>:</span> <span class='s2'>&quot;Authentication Failed&quot;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<p>3 Token 超时会导致 403 Session Expired 错误。</p>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>403</span> <span class='ne'>FORBIDDEN</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>{</span>
+  <span class='nt'>&quot;message&quot;</span><span class='p'>:</span> <span class='s2'>&quot;Session Expired&quot;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<p>4 API 服务查询超时会导致 408 Request Timeout 错误，此时基本是学校的服务器已不可用。</p>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>408</span> <span class='ne'>Request Timeout</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>{</span>
+  <span class='nt'>&quot;message&quot;</span><span class='p'>:</span> <span class='s2'>&quot;Request Timeout&quot;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<h2 id='id6'>认证</h2>
+
+<p>验证成功获取了 Token 才能进行下一步的查询操作，Token 的生命为 30 分钟 - 2 小时不等。</p>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /sign_in
+</code></pre></div>
+<h3 id='id7'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>username</span> <span class='o'>=</span> 11111111
+<span class='nv'>password</span> <span class='o'>=</span> 12345678
+</code></pre></div>
+<h3 id='id8'>结果</h3>
+<div class='highlight'><pre><code class='bash'>HTTP/1.0 200 OK
+Content-Type: application/json
+
+<span class='o'>{</span>
+  <span class='s2'>&quot;token&quot;</span>: <span class='s2'>&quot;AA65ACC1AF06359F4E36098AAE520538&quot;</span>
+<span class='o'>}</span>
+</code></pre></div>
+<h2 id='id9'>查询功能</h2>
+
+<p>所有的查询功能使用时都必须同时上传 token 参数。</p>
+
+<h3 id='id10'>个人信息</h3>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /info
+</code></pre></div>
+<h3 id='id11'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>sno</span>   <span class='o'>=</span> 11111111
+</code></pre></div>
+<h3 id='id12'>结果</h3>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>{</span>
+    <span class='nt'>&quot;xh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学号&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;xm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;姓名&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;cym&quot;</span><span class='p'>:</span> <span class='s2'>&quot;曾用名&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;zyh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专业号&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;rxny&quot;</span><span class='p'>:</span> <span class='s2'>&quot;入学年月&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;nj&quot;</span><span class='p'>:</span> <span class='s2'>&quot;年级&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;hkszd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;省份&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;tc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;没啥特长呢&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;lxdh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;联系电话&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;dzxx&quot;</span><span class='p'>:</span> <span class='s2'>&quot;邮箱&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;byxx&quot;</span><span class='p'>:</span> <span class='s2'>&quot;毕业学校&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;xymc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学院&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;zyfxmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专业&quot;</span><span class='p'>,</span>
+    <span class='nt'>&quot;yzbm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;邮政编码&quot;</span><span class='p'>,</span>
+<span class='p'>}</span>
+</code></pre></div>
+<h3 id='id13'>分数</h3>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /score
+</code></pre></div>
+<h3 id='id14'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
+<span class='nv'>term</span>  <span class='o'>=</span> 1
+</code></pre></div>
+<h3 id='id15'>结果</h3>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>[</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;jxbpm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;教学班排名&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;绩点&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jxbh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;教学编号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jsxm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;教师姓名&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xnd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学年度&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xq&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学期&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kcywmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程英文名称&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kch&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kcmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程名称&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kclb&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程类别&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xf&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xs&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学时&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;zpcj&quot;</span><span class='p'>:</span> <span class='s2'>&quot;总评成绩&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;zzcj&quot;</span><span class='p'>:</span> <span class='s2'>&quot;最终成绩&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;sftg&quot;</span><span class='p'>:</span> <span class='s2'>&quot;是否通过&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;cjzt&quot;</span><span class='p'>:</span> <span class='s2'>&quot;成绩状态&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;resource_id&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程资源号&quot;</span><span class='p'>,</span>
+    <span class='p'>}</span>
+<span class='p'>]</span>
+</code></pre></div>
+<h3 id='id16'>课表</h3>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /timetable
+</code></pre></div>
+<h3 id='id17'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
+<span class='nv'>term</span>  <span class='o'>=</span> 1
+</code></pre></div>
+<h3 id='id18'>结果</h3>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>[</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;dsz&quot;</span><span class='p'>:</span> <span class='s2'>&quot;01&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;weekpos&quot;</span><span class='p'>:</span> <span class='s2'>&quot;1&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kcmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;江南Style过程与方法导论&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;dd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;实验中心B403&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;zfw&quot;</span><span class='p'>:</span> <span class='s2'>&quot;1-17&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;7-9节&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;dsz&quot;</span><span class='p'>:</span> <span class='s2'>&quot;01&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;weekpos&quot;</span><span class='p'>:</span> <span class='s2'>&quot;2&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kcmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;萝莉塔养成应用方法&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;dd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;东C205&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;zfw&quot;</span><span class='p'>:</span> <span class='s2'>&quot;1-17&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;3-5节&quot;</span>
+    <span class='p'>}</span>
+<span class='p'>]</span>
+</code></pre></div>
+<h3 id='id19'>选课结果</h3>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /course_result
+</code></pre></div>
+<h3 id='id20'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
+<span class='nv'>term</span>  <span class='o'>=</span> 1
+</code></pre></div>
+<h3 id='id21'>结果</h3>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>[</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;xnd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学年度&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xq&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学期&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;resource_id&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程资源号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;pylbm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;培养类别&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kclbm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程类别&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kch&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xf&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;学号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;jxbh&quot;</span><span class='p'>:</span> <span class='s2'>&quot;教学编号&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;kcmc&quot;</span><span class='p'>:</span> <span class='s2'>&quot;课程名称&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;khfs&quot;</span><span class='p'>:</span> <span class='s2'>&quot;考核方式&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xkjd&quot;</span><span class='p'>:</span> <span class='s2'>&quot;选课阶段&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;xkcgbz&quot;</span><span class='p'>:</span> <span class='s2'>&quot;选课状态&quot;</span><span class='p'>,</span>
+    <span class='p'>}</span>
+<span class='p'>]</span>
+</code></pre></div>
+<h3 id='id22'>已获得学分</h3>
+
+<p>URL</p>
+<div class='highlight'><pre><code class='bash'>POST /earned_credit
+</code></pre></div>
+<p>参数</p>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>sno</span>   <span class='o'>=</span> 11111111
+<span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
+<span class='nv'>term</span>  <span class='o'>=</span> 1
+</code></pre></div>
+<p>结果</p>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>[</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;公必学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;44.0&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专必学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;88.0&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专选学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;22.0&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;公选学分&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;11.0&quot;</span>
+    <span class='p'>}</span>
+<span class='p'>]</span>
+</code></pre></div>
+<h3 id='gpa'>GPA</h3>
+
+<h3 id='url'>URL</h3>
+<div class='highlight'><pre><code class='bash'>POST /gpa
+</code></pre></div>
+<h3 id='id23'>参数</h3>
+<div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
+<span class='nv'>sno</span>   <span class='o'>=</span> 11111111
+<span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
+<span class='nv'>term</span>  <span class='o'>=</span> 1
+</code></pre></div>
+<h3 id='id24'>结果</h3>
+<div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
+<span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
+
+<span class='p'>[</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;公必平均绩点&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;2.2&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专必平均绩点&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;2.2&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;专选平均绩点&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;2.2&quot;</span>
+    <span class='p'>},</span>
+    <span class='p'>{</span>
+        <span class='nt'>&quot;oneColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;公选平均绩点&quot;</span><span class='p'>,</span>
+        <span class='nt'>&quot;twoColumn&quot;</span><span class='p'>:</span> <span class='s2'>&quot;2.2&quot;</span>
+    <span class='p'>}</span>
+<span class='p'>]</span>
+</code></pre></div>
+<h2 id='id25'>意见与建议</h2>
+
+<p>您在使用时遇到了什么问题，或者有什么建议，欢迎与我们联系。</p>
+
+<h2 id='id26'>感谢</h2>
+
+<p>感谢网络中心为我们提供了服务器，在第一版 App 推出后我们会进一步合作添加新的 API 支持。</p>
+</article>
+
+	<div class="site-footer">
+		<p>
+			<a href="#content">Back to top &uarr;</a> <br />
+			<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Content licensed under a Creative Commons license.</a>
+		</p>
+		<p>
+			<a href="mailto:opensysu@gmail.com">opensysu@gmail.com</a>
+		</p>
+	</div>
+</article>
+
+	<script>
+		var _gaq = [['_setAccount', 'UA-34393653-1'], ['_trackPageview']];
+		(function(d, t) {
+			var g = d.createElement(t), s = d.getElementsByTagName(t)[0]; g.async = 1;
+			g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			s.parentNode.insertBefore(g, s);
+		})(document, 'script');
+	</script>
+
+</body>
+</html>

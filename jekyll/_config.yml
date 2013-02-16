@@ -1,0 +1,6 @@
+auto: true
+permalink: /:title
+category_dir: tag
+pygments: true
+exclude:
+- README
