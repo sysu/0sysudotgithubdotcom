@@ -66,3 +66,11 @@ InSysu 中大教务 Android 客户端
 
 - [zhibo](https://github.com/zhibo)
 
+[iSYSU_Library](https://github.com/applesysu/iSYSU_Library)
+-----------------------------------------------------------
+
+apple 俱乐部的图书馆 iOS 客户端
+
+- [lulu](https://github.com/lovedayluk)
+- [ddling](https://github.com/ddling)
+- [lancy受](https://github.com/lancy)

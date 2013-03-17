@@ -46,7 +46,7 @@
 	<div class='notice'>
 本 API 为第一版，提供了基本的认证后查询功能。API 服务器的地址是 http://api.sysujwxt.com/v1/，所有的数据通过 JSON 交互。
 </div>
-<h2 id='id148'>常见参数</h2>
+<h2 id='id7'>常见参数</h2>
 
 <p>因为提供的都是认证后的信息获取，所以只能接受 POST 请求。用到的参数如下：</p>
 <div class='highlight'><pre><code class='bash'>usernames     <span class='c'># 登陆用学号</span>
@@ -59,7 +59,7 @@ course_type   <span class='c'># 课程类型</span>
 grade         <span class='c'># 年级</span>
 tno           <span class='c'># 教学号</span>
 </code></pre></div>
-<h2 id='id149'>错误处理</h2>
+<h2 id='id8'>错误处理</h2>
 
 <p>1 发送的 JSON 如果缺少必要的参数会导致 400 Bad Request 错误。</p>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>400</span> <span class='ne'>BAD REQUEST</span>
@@ -93,18 +93,18 @@ tno           <span class='c'># 教学号</span>
   <span class='nt'>&quot;message&quot;</span><span class='p'>:</span> <span class='s2'>&quot;Request Timeout&quot;</span>
 <span class='p'>}</span>
 </code></pre></div>
-<h2 id='id150'>认证</h2>
+<h2 id='id9'>认证</h2>
 
 <p>验证成功获取了 Token 才能进行下一步的查询操作，Token 的生命为 30 分钟 - 2 小时不等。</p>
 
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /sign_in
 </code></pre></div>
-<h3 id='id151'>参数</h3>
+<h3 id='id10'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>username</span> <span class='o'>=</span> 11111111
 <span class='nv'>password</span> <span class='o'>=</span> 12345678
 </code></pre></div>
-<h3 id='id152'>结果</h3>
+<h3 id='id11'>结果</h3>
 <div class='highlight'><pre><code class='bash'>HTTP/1.0 200 OK
 Content-Type: application/json
 
@@ -112,20 +112,20 @@ Content-Type: application/json
   <span class='s2'>&quot;token&quot;</span>: <span class='s2'>&quot;AA65ACC1AF06359F4E36098AAE520538&quot;</span>
 <span class='o'>}</span>
 </code></pre></div>
-<h2 id='id153'>查询功能</h2>
+<h2 id='id12'>查询功能</h2>
 
 <p>所有的查询功能使用时都必须同时上传 token 参数。</p>
 
-<h3 id='id154'>个人信息</h3>
+<h3 id='id13'>个人信息</h3>
 
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /info
 </code></pre></div>
-<h3 id='id155'>参数</h3>
+<h3 id='id14'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
 <span class='nv'>sno</span>   <span class='o'>=</span> 11111111
 </code></pre></div>
-<h3 id='id156'>结果</h3>
+<h3 id='id15'>结果</h3>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
 <span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
 
@@ -146,17 +146,17 @@ Content-Type: application/json
     <span class='nt'>&quot;yzbm&quot;</span><span class='p'>:</span> <span class='s2'>&quot;邮政编码&quot;</span><span class='p'>,</span>
 <span class='p'>}</span>
 </code></pre></div>
-<h3 id='id157'>分数</h3>
+<h3 id='id16'>分数</h3>
 
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /score
 </code></pre></div>
-<h3 id='id158'>参数</h3>
+<h3 id='id17'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
 <span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
 <span class='nv'>term</span>  <span class='o'>=</span> 1
 </code></pre></div>
-<h3 id='id159'>结果</h3>
+<h3 id='id18'>结果</h3>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
 <span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
 
@@ -183,17 +183,17 @@ Content-Type: application/json
     <span class='p'>}</span>
 <span class='p'>]</span>
 </code></pre></div>
-<h3 id='id160'>课表</h3>
+<h3 id='id19'>课表</h3>
 
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /timetable
 </code></pre></div>
-<h3 id='id161'>参数</h3>
+<h3 id='id20'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
 <span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
 <span class='nv'>term</span>  <span class='o'>=</span> 1
 </code></pre></div>
-<h3 id='id162'>结果</h3>
+<h3 id='id21'>结果</h3>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
 <span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
 
@@ -216,17 +216,17 @@ Content-Type: application/json
     <span class='p'>}</span>
 <span class='p'>]</span>
 </code></pre></div>
-<h3 id='id163'>选课结果</h3>
+<h3 id='id22'>选课结果</h3>
 
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /course_result
 </code></pre></div>
-<h3 id='id164'>参数</h3>
+<h3 id='id23'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
 <span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
 <span class='nv'>term</span>  <span class='o'>=</span> 1
 </code></pre></div>
-<h3 id='id165'>结果</h3>
+<h3 id='id24'>结果</h3>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
 <span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
 
@@ -248,7 +248,7 @@ Content-Type: application/json
     <span class='p'>}</span>
 <span class='p'>]</span>
 </code></pre></div>
-<h3 id='id166'>已获得学分</h3>
+<h3 id='id25'>已获得学分</h3>
 
 <p>URL</p>
 <div class='highlight'><pre><code class='bash'>POST /earned_credit
@@ -287,13 +287,13 @@ Content-Type: application/json
 <h3 id='url'>URL</h3>
 <div class='highlight'><pre><code class='bash'>POST /gpa
 </code></pre></div>
-<h3 id='id167'>参数</h3>
+<h3 id='id26'>参数</h3>
 <div class='highlight'><pre><code class='bash'><span class='nv'>token</span> <span class='o'>=</span> AA65ACC1AF06359F4E36098AAE520538
 <span class='nv'>sno</span>   <span class='o'>=</span> 11111111
 <span class='nv'>year</span>  <span class='o'>=</span> 2011-2012
 <span class='nv'>term</span>  <span class='o'>=</span> 1
 </code></pre></div>
-<h3 id='id168'>结果</h3>
+<h3 id='id27'>结果</h3>
 <div class='highlight'><pre><code class='http'><span class='kr'>HTTP</span><span class='o'>/</span><span class='m'>1.0</span> <span class='m'>200</span> <span class='ne'>OK</span>
 <span class='na'>Content-Type</span><span class='o'>:</span> <span class='l'>application/json</span>
 
@@ -316,11 +316,11 @@ Content-Type: application/json
     <span class='p'>}</span>
 <span class='p'>]</span>
 </code></pre></div>
-<h2 id='id169'>意见与建议</h2>
+<h2 id='id28'>意见与建议</h2>
 
 <p>您在使用时遇到了什么问题，或者有什么建议，欢迎与我们联系。</p>
 
-<h2 id='id170'>感谢</h2>
+<h2 id='id29'>感谢</h2>
 
 <p>感谢网络中心为我们提供了服务器，在第一版 App 推出后我们会进一步合作添加新的 API 支持。</p>
 </article>
