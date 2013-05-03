@@ -4,7 +4,7 @@ title: SYSUJWXT API
 ---
 
 <div class="notice">
-本 API 为第一版，提供了基本的认证后查询功能。API 服务器的地址是 http://api.sysujwxt.com/v1/，所有的数据通过 JSON 交互。
+API 接收申请，文档等待更新。
 </div>
 
 

@@ -1,8 +1,8 @@
 ---
 layout: static
-title: SYSUJWXT API
+title: SYSULIB API
 ---
 
 <div class="notice">
-API 实现中。
+API 接收申请，文档等待更新。
 </div>
