@@ -38,10 +38,30 @@ python 实现的中山大学东校区校园网认证客户端
 - [tigersoldier](https://github.com/tigersoldier)
 - [houqp](https://github.com/houqp)
 
+[SYSUH3C](https://github.com/zonyitoo/sysuh3c)
+----------------------------------------------
+
+C/C++版东校区H3C客户端，适用于路由器及所有的Linux系统
+
+### 贡献者
+
+- [zonyitoo](https://github.com/zonyitoo)
+
+[SYSUH3C CGI](https://github.com/zonyitoo/sysuh3c-cgi)
+------------------------------------------------------
+
+SYSUH3C在路由器上运行的简单登录CGI
+
+### 贡献者
+
+- [zonyitoo](https://github.com/zonyitoo)
+
 [qYaH3C](https://github.com/sysu/qYaH3C)
 ----------------------------------------
 
 带GUI界面的YaH3C实现，使用PyQt4编写
+
+另一个使用Qt5实现的版本[qh3client](https://github.com/zonyitoo/qh3client)
 
 ### 贡献者
 
